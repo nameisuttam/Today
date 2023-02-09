@@ -1,0 +1,26 @@
+
+        
+        table {
+            caption-side: bottom;
+            border-collapse: collapse;
+        }  
+        tr,td{
+            border: 1px solid ;
+            padding: 15px;
+            font-weight:bold;
+            text-align: left;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        button{
+            background-color: white;
+            color: black;
+            border: 3px solid #555555;
+            border-radius: 18px;
+            padding: 8px 21px;
+            font-size: 14px;
+            margin: 2px;
+            text-decoration: none;
+        }
+        a{
+            text-decoration: none;  
+        }

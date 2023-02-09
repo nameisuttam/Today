@@ -1,0 +1,207 @@
+$stateId = isset($_POST['id']) ? $_POST['id'] : 0;
+$command = isset($_POST['get']) ? $_POST['get'] : "";
+
+switch ($command) {
+    case "city":
+        $result1 = "<option>Select City</option>";
+        $statement = "SELECT * FROM cities WHERE state_id=" . $stateId;
+        $dt = mysqli_query($connect, $statement);
+
+        while ($result = mysqli_fetch_array($dt)) {
+            $result1 .= "<option value=" . $result['city'] . ">" . $result['city'] . "</option>";
+        }
+        echo $result1;
+        break;
+}
+
+exit();
+
+
+
+
+
+
+
+
+<?php
+include 'connect.php';
+?>
+
+<?php
+$id = $_GET['updateid'];
+$sql = "SELECT cities.id,states.state,cities.city FROM (cities inner join states on cities.state_id = states.id) where cities.id='$id'";
+$result = mysqli_query($connect, $sql);
+$row = mysqli_fetch_assoc($result);
+$state = $row['state_id'];
+$states = $row['state'];
+$city = $row['city'];
+echo "<br>";
+if (isset($_POST['submit'])) {
+    $states = $_POST['state'];
+    $city = $_POST['city'];
+    $sql = "UPDATE cities inner join states on states.id = cities.state_id SET `city` = '$city', `state` ='$states' WHERE `cities`.`id` = '$id'";
+    $result = mysqli_query($connect, $sql);
+    if ($result) {
+        // header("location:city.php");
+    } else {
+        die(mysqli_error($connect));
+    }
+}
+?>
+<?php
+function test_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $error = array();
+    $city = $_POST['city'];
+    if (empty($city)) {
+        $error[] = "First fill this fild";
+    } else {
+        $city = test_input($_POST["city"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $city)) {
+            $error[] = "Only chracter is allowed";
+        } else {
+            $city = test_input($_POST["city"]);
+            $sql = "select * from `cities` where (city='$city');";
+            $res = mysqli_query($connect, $sql);
+            if (mysqli_num_rows($res) > 0) {
+                $row = mysqli_fetch_assoc($res);
+                if ($city == isset($row['city'])) {
+                    $error[] = "<p class='error'>The data is already existed</p>";
+                }
+            }
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>City update</title>
+</head>
+
+<body class="center3">
+    <p>
+        <a class="text2" href="index.php"><b>index Page</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="search_form.php"><b>Search</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="display.php"><b>Display</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="joins.php"><b>Joins</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="designation.php"><b>*Designation</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="desig_input.php"><b>*Desig_input</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="state_input.php"><b>*State_input</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="city.php"><b>*City</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="city_input.php"><b>*City_input</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="city_display.php"><b>*City_Display</b></a>
+        &nbsp;,&nbsp;
+        <a class="text2" href="search_date.php"><b>Serach_Date</b></a>
+    </p>
+    <form method="POST">
+        <h2><u>City Insertation</u></h2>
+        <table>
+            <tr>
+                <td>State</td>
+                <?php
+                    $sql_city = "SELECT * FROM `states`";
+                    $results = mysqli_query($connect, $sql_city);
+                    ?>
+                    <?php
+                    if ($results->num_rows > 0) {
+                        $selects = mysqli_fetch_all($results, MYSQLI_ASSOC);
+                    }
+                    ?>
+                    <td>
+                        <select name="state" id="state">
+                            <option>select</option>
+                            <?php
+                            foreach ($selects as $select) { ?>
+                                <option value="<?php echo $select['id']; ?>" <?php if (isset($states) && $states == $select['id']) {
+                                                                                    echo 'selected="selected"';
+                                                                                } ?>><?php echo $select['state']; ?>
+                                </option>
+                            <?php
+                            } ?>
+                        </select>
+                    </select>
+                </td>
+                </td>
+                <td>cities
+                    <select id="city" name="city" onChange="cities();">
+                        <option><a class="text2">Select City</a></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Update city</td>
+                <td><input name="city" id="textValue" onchange="getData(this.value, 'displaydata')"></td>
+            </tr>
+        </table>
+        <input type="submit" name="submit" value="submit">
+    </form>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        function cities() {
+            var d = document.getElementById("city");
+            var dispalytext = d.options[d.selectedIndex].text;
+            document.getElementById("textValue").value = dispalytext;
+        }
+        $(document).ready(function() {
+
+            $('#state').change(function() {
+                loadCity($(this).find(':selected').val())
+            })
+
+
+        });
+
+        function loadState() {
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                data: "get=state"
+            }).done(function(result) {
+
+                $(result).each(function() {
+                    $("#state").append($(result));
+                })
+            });
+        }
+
+        function loadCity(stateId) {
+            $("#city").children().remove()
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                data: "get=city&id=" + stateId
+            }).done(function(result) {
+
+                $("#city").append($(result));
+
+            });
+        }
+
+
+        loadState();
+    </script>
+</body>
+
+</html>

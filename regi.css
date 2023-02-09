@@ -1,0 +1,35 @@
+body,input[type=text],input[type=date],input[type=number],input[type=submit],input[type=email]{
+    font-weight:bold;
+    font-family: Arial, Helvetica, sans-serif;
+} 
+
+table {
+    caption-side: bottom;
+    border-collapse: collapse;
+}  
+
+tr,td{
+    border: 1px solid ;
+    padding: 15px;
+    font-weight:bold;
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+}
+select,option{
+    font-weight:bold;  
+}
+
+button,a{
+    background-color: white;
+    color: black;
+    border: 3px solid #555555;
+    border-radius: 18px;
+    padding: 8px 21px;
+    font-size: 14px;
+    margin: 2px;
+    text-decoration: none;
+}
+
+.error{
+    color: rgb(230, 0, 0);
+}
